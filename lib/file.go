@@ -49,6 +49,30 @@ func (f *MarkdownFile) Upload(m *Markdown2Confluence) (url string, err error) {
 		return url, fmt.Errorf("unable to render content from %s: %s", f.Path, err)
 	}
 
+	tocTemplate := `<ac:structured-macro ac:name="toc" ac:schema-version="1" >`
+	tocTemplate += `  <ac:parameter ac:name="maxLevel">7</ac:parameter>`
+	tocTemplate += `  <ac:parameter ac:name="minLevel">2</ac:parameter>`
+	tocTemplate += `  <ac:parameter ac:name="exclude">Beispiel.*</ac:parameter>`
+	tocTemplate += `  <ac:parameter ac:name="style">none</ac:parameter>`
+	tocTemplate += `  <ac:parameter ac:name="separator">pipe</ac:parameter>`
+	tocTemplate += `</ac:structured-macro>`
+
+	twoPanel := `<div class="contentLayout2">`
+	twoPanel += `  <div class="columnLayout two-right-sidebar " data-layout="two-right-sidebar">`
+	twoPanel += `    <div class="cell normal" data-type="normal">`
+	twoPanel += `        <div class="innerCell">`
+	twoPanel += wikiContent
+	twoPanel += `        </div>`
+	twoPanel += `    </div>`
+	twoPanel += `    <div class="cell aside" data-type="aside">`
+	twoPanel += `        <div class="innerCell">`
+	twoPanel += tocTemplate
+	twoPanel += `        </div>`
+	twoPanel += `    </div>`
+	twoPanel += ` </div>`
+	twoPanel += `</div>`
+
+	wikiContent = twoPanel
 	if m.Debug {
 		fmt.Println("---- RENDERED CONTENT START ---------------------------------")
 		fmt.Println(wikiContent)
